@@ -1,10 +1,13 @@
 package com.udacity.project4.locationreminders.geofence
 
+import android.Manifest
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.JobIntentService
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.Geofence
@@ -26,7 +29,7 @@ import com.udacity.project4.utils.errorMessage
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
-    private  val TAG = "GeofenceBroadcastReceiv"
+    private val TAG = "GeofenceBroadcastReceiv"
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -37,7 +40,13 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 Log.e(TAG, errorMessage)
                 return
             }
-            GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
+            }
         }
     }
 }
